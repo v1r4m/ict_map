@@ -13,13 +13,6 @@
         android:layout_height="match_parent"
         tools:context="com.example.eunjin.myapplication.MapsActivityApplication" />
 
-    <ImageView
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@mipmap/ic_launcher_round"
-        android:text="TextView" />
 
 <TextView
     android:id="@+id/dragg_result"
@@ -46,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/dragg_result"
         android:layout_alignParentStart="true"
-        android:text="saved area" />
+        android:text="4개의 꼭지점을 선택한 후 select 버튼을 눌러주세요." />
 
 
 </RelativeLayout>

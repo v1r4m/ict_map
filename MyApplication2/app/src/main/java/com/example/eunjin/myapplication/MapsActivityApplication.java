@@ -1,20 +1,29 @@
 package com.example.eunjin.myapplication;
 
+import android.app.Dialog;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.LayoutInflaterCompat;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -29,6 +38,8 @@ public class MapsActivityApplication extends FragmentActivity implements OnMapRe
     private TextView resultText;
     private Button setpos;
     private TextView saved;
+    private int markCount=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +60,19 @@ public class MapsActivityApplication extends FragmentActivity implements OnMapRe
 
         configureCameraIdle();
 
+        setpos.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //EmailActivity starts
+                Intent i = new Intent(MapsActivityApplication.this, EmailActivity.class);
+                if(markCount == 4)
+                {
+                    startActivity(i);
+                }
+            }
+        });
+
+
     }
 
 
@@ -67,10 +91,10 @@ public class MapsActivityApplication extends FragmentActivity implements OnMapRe
                         String country = addressList.get(0).getCountryName();
                         if (!locality.isEmpty() && !country.isEmpty())
                             resultText.setText(locality + "  " + country);
-                        if (setpos.callOnClick())
-                            drawMarker();
+
 
                     }
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -80,16 +104,6 @@ public class MapsActivityApplication extends FragmentActivity implements OnMapRe
         };
     }
 
-    private void drawMarker() {
-        if (mMap != null) {
-            LatLng latLng = mMap.getCameraPosition().target;
-            mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("Mark"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
-        }
-
-    }
 
 
     @Override
@@ -100,6 +114,27 @@ public class MapsActivityApplication extends FragmentActivity implements OnMapRe
         mMap.moveCamera(CameraUpdateFactory.newLatLng(suwon));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         mMap.animateCamera(zoom);
+
+        mMap = googleMap;
+
+        // 맵 터치 이벤트 구현 //
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng point) {
+                MarkerOptions mOptions = new MarkerOptions();
+                // 마커 타이틀
+                mOptions.title("마커 좌표");
+                Double latitude = point.latitude; // 위도
+                Double longitude = point.longitude; // 경도
+                // 마커의 스니펫(간단한 텍스트) 설정
+                mOptions.snippet(latitude.toString() + ", " + longitude.toString());
+                // LatLng: 위도 경도 쌍을 나타냄
+                mOptions.position(new LatLng(latitude, longitude));
+                // 마커(핀) 추가
+                mMap.addMarker(mOptions);
+                markCount++;
+            }
+        });
     }
 
     protected void setStatusBarTranslucent(boolean makeTranslucent) {
